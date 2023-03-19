@@ -12,7 +12,6 @@ data.append(entry)
 with open(filename,"w") as file:
     json.dump(data,file)
 '''
-
 import json
 from Acc import Account_details
 
