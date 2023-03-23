@@ -1,64 +1,30 @@
-'''
-import json
-filename = "example.json"
-entry ={
-    "name": "abc",
-    "accont number": "xxxxxxxx001",
-    "Balance": "100000000$"
-  }
-with open(filename,"r") as file:
-    data = json.load(file)
-data.append(entry)
-with open(filename,"w") as file:
-    json.dump(data,file)
-'''
-import json
-from Acc import Account_details
+import phonenumbers
+import opencage
+import folium
+from myphone import number
 
-filename = "example.json"
-print("Welcome to KR Bank ", "How can I Help You?", "Account Details", "Create Account", "Deposite", "Withdraw",
-      sep="\n")
-inp = input()
-with open(filename, "r") as f:
-    data = json.load(f)
-if inp == "Account Details":
-    name = input("Enter your name:")
-    for i in range(len(data)):
-        if data[i]["name"] == name:
-            user = Account_details(data, i)
+from phonenumbers import geocoder
 
-elif inp == "Create Account":
-    print("For the purpose of Account Creation 200$ will be deducted from your account.")
-    name = input("Enter Your name:")
-    amount = int(input('Enter the amount you want to Deposite '))
-    new_user = {"name":name, "account number":f"xxxxxxx{len(data)+1}","Balance":f"{amount-200}"}
-    data.append(new_user)
-    with open(filename, "w") as file:
-        json.dump(data, file)
-    print("Successfully Account created!")
+pepnumber = phonenumbers.parse(number)
+location = geocoder.description_for_number(pepnumber, "en")
+print(location)
 
-elif inp =="Deposite":
-    name =input("Enter your name")
-    amount = int(input("Enter the amount you want to Deposite"))
-    for i in range(len(data)):
-        if data[i]["name"] == name:
-            new_bal = int(data[i]["Balance"])+amount
-            data[i]["Balance"]=new_bal
-            with open(filename, "w") as file:
-                json.dump(data, file)
-            print("Successfully amount Deposited to your bank account")
+from phonenumbers import carrier
 
-elif inp =="Withdraw":
-    name =input("Enter your name:")
-    amount = int(input("Enter the amount you want to Withdraw:"))
-    for i in range(len(data)):
-        if data[i]["name"] == name:
-            new_bal = int(data[i]["Balance"])-amount
-            data[i]["Balance"]=new_bal
-            with open(filename, "w") as file:
-                json.dump(data, file)
-            print("Successfully amount Withdrawen from your bank account.")
+service_pro = phonenumbers.parse(number)
+print(carrier.name_for_number(service_pro, "en"))
 
+from opencage.geocoder import OpenCageGeocode
 
+key = '50264d97515f401e99783d5733cbcc2d'
 
-
+geocoder = OpenCageGeocode(key)
+query = str(location)
+results = geocoder.geocode(query)
+# print(results)
+lat = results[0]['geometry']['lat']
+lng = results[0]['geometry']['lng']
+print(lat, lng)
+myMap = folium.Map(location=[lat, lng], zoom_start=9)
+folium.Marker([lat, lng], popup=location).add_to(myMap)
+myMap.save("Mylocation4.html")
